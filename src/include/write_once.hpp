@@ -32,10 +32,14 @@ public:
         return true;
     }
 
+    explicit operator bool() const
+    {
+        return IsInitialized();
+    }
+
     /// @return The value if it has been init, else a nullptr
     const T& Get() const
     {
-        // assert( IsInitialized() );
         assert( IsInitialized() );
         return *m_pVal.get();
     }
@@ -43,6 +47,12 @@ public:
     bool operator!() const
     {
         return IsInitialized();
+    }
+
+    const T& operator *() const
+    {
+        assert( IsInitialized() );
+        return Get();
     }
 
     T const* operator->() const
@@ -72,3 +82,111 @@ private:
     std::unique_ptr<T> m_pVal;
 
 };
+
+template<class T>
+inline bool operator == ( WriteOnce<T> const& x, WriteOnce<T> const& y )
+{
+    return ( !x ) != ( !y ) ? false : ( !x ? true : ( *x == *y ) );
+}
+
+template<class T>
+inline bool operator != ( WriteOnce<T> const& x, WriteOnce<T> const& y )
+{
+    return !( x == y );
+}
+
+template<class T>
+inline bool operator < ( WriteOnce<T> const& x, WriteOnce<T> const& y )
+{
+    return !y ? false : ( !x ? true : ( *x ) < ( *y ) );
+}
+
+template<class T>
+inline bool operator > ( WriteOnce<T> const& x, WriteOnce<T> const& y )
+{
+    return y < x;
+}
+
+template<class T>
+inline bool operator <= ( WriteOnce<T> const& x, WriteOnce<T> const& y )
+{
+    return !( y < x );
+}
+
+template<class T>
+inline bool operator >= ( WriteOnce<T> const& x, WriteOnce<T> const& y )
+{
+    return !( x < y );
+}
+
+template<class T>
+inline constexpr bool operator==( const WriteOnce<T>& opt, const T& value )
+{
+    return bool(opt) ? *opt == value : false;
+}
+
+template<class T>
+inline constexpr bool operator==( const T& value, const WriteOnce<T>& opt )
+{
+    return bool(opt) ? value == *opt : false;
+}
+
+template<class T>
+inline constexpr bool operator!=( const WriteOnce<T>& opt, const T& value )
+{
+    return bool(opt) ? *opt != value : true;
+}
+
+template<class T>
+inline constexpr bool operator!=( const T& value, const WriteOnce<T>& opt )
+{
+    return bool(opt) ? value != *opt : true;
+}
+
+template<class T>
+inline constexpr bool operator<( const WriteOnce<T>& opt, const T& value )
+{
+    return bool(opt) ? *opt < value  : true;
+}
+
+template<class T>
+inline constexpr bool operator<( const T& value, const WriteOnce<T>& opt )
+{
+    return bool(opt) ? value < *opt  : false;
+}
+
+template<class T>
+inline constexpr bool operator<=( const WriteOnce<T>& opt, const T& value )
+{
+    return bool(opt) ? *opt <= value : true;
+}
+
+template<class T>
+inline constexpr bool operator<=( const T& value, const WriteOnce<T>& opt )
+{
+    return bool(opt) ? value <= *opt : false;
+}
+
+template< class T>
+inline constexpr bool operator>( const WriteOnce<T>& opt, const T& value )
+{
+    return bool(opt) ? *opt > value  : false;
+}
+
+template<class T>
+inline constexpr bool operator>( const T& value, const WriteOnce<T>& opt )
+{
+    return bool(opt) ? value > *opt  : true;
+}
+
+template<class T>
+inline constexpr bool operator>=( const WriteOnce<T>& opt, const T& value )
+{
+    return bool(opt) ? *opt >= value : false;
+}
+
+template<class T>
+inline constexpr bool operator>=( const T& value, const WriteOnce<T>& opt )
+{
+    return bool(opt) ? value >= *opt : true;
+}

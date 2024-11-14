@@ -48,11 +48,15 @@ TEST_F(WriteOnceTest, BasicMembers)
     {
         int val_to_set {5};
     
+        // Test using == operator and the get operator!
         EXPECT_DEATH(m_intContainer.Get(), "");
+        EXPECT_FALSE(val_to_set == m_intContainer); // non-initialized comparison is always false!
         EXPECT_TRUE(m_intContainer.Write(val_to_set));
         EXPECT_EQ(val_to_set, m_intContainer.Get());
+        EXPECT_TRUE(val_to_set == m_intContainer);
         EXPECT_FALSE(m_intContainer.Write(10));
         EXPECT_TRUE(WriteRandomData(100, m_intContainer));
+        EXPECT_TRUE(val_to_set == m_intContainer);
         EXPECT_EQ(val_to_set, m_intContainer.Get());
     }
     {
@@ -74,11 +78,15 @@ TEST_F(WriteOnceTest, BasicMembers)
 TEST_F(WriteOnceTest, InstantiatedWith)
 {
     WriteOnce<int> instantiateTogether {7};
+    // Test using == operator and the get operator!
     EXPECT_EQ(7, instantiateTogether.Get());
+    EXPECT_TRUE(7 == instantiateTogether);
     EXPECT_FALSE(instantiateTogether.Write(9));
     EXPECT_EQ(7, instantiateTogether.Get());
+    EXPECT_TRUE(7 == instantiateTogether);
     EXPECT_TRUE(WriteRandomData(100, instantiateTogether));
     EXPECT_EQ(7, instantiateTogether.Get());
+    EXPECT_TRUE(7 == instantiateTogether);
 }
 
 TEST_F(WriteOnceTest, Test_NonTrivialObject_InstantiatedWith)
