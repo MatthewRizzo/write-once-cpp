@@ -48,9 +48,11 @@ process_cli_args()
 # Return 0 on success, > 0 on failure
 main()
 {
-    process_cli_args "$@"
+    if ! process_cli_args "$@"; then
+        return 0
+    fi
 
-    local update_submodules_res=0
+    update_submodules_res=0
 
     if $UPDATE_SUBMODULES; then
         git submodule update --init --recursive
@@ -59,13 +61,13 @@ main()
 
     mkdir -p "$BUILD_DIR"
 
-    local configure_res=0
+    configure_res=0
     if [ $CONFIGURE_CMAKE ] && [ $update_submodules_res -eq 0 ]; then
         cmake -B "$BUILD_DIR"
         configure_res=$?
     fi
 
-    local compile_res=0
+    compile_res=0
     if [ $COMPILE ] && [ $configure_res -eq 0 ]; then
         cmake \
             --build "$BUILD_DIR" \
@@ -74,7 +76,7 @@ main()
         compile_res=$?
     fi
 
-    local test_res=0
+    test_res=0
     if [ $RUN_TESTS ] && [ $compile_res -eq 0 ]; then
         ctest --test-dir "$TEST_DIR" --output-on-failure
         test_res=$?
