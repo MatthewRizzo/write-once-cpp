@@ -18,10 +18,7 @@ public:
 
     }
 
-    ~WriteOnce()
-    {
-        m_pVal.reset();
-    }
+    ~WriteOnce() = default;
 
     /// @return True if the value was written
     bool Write(const T& val)
